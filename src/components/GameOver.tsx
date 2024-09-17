@@ -1,7 +1,8 @@
-// src/components/GameOver.tsx
 import '../styles/GameOver.scss';
 
 import { useEffect, useState } from 'react';
+
+import { Button } from './Button';
 
 type GameOverProps = {
   show: boolean;
@@ -24,9 +25,12 @@ export const GameOver = ({ show, onRestart }: GameOverProps) => {
   return (
     <div className={`game-over ${showOverlay ? 'show' : ''}`}>
       <div className="game-over-message">Game Over!</div>
-      <button className="game-over-button" onClick={onRestart}>
-        Restart
-      </button>
+      <Button
+        className="game-over-button"
+        color="brown"
+        onClick={onRestart}
+        name="Restart"
+      />
     </div>
   );
 };

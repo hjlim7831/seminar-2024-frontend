@@ -1,4 +1,3 @@
-// src/components/Score.tsx
 import '../styles/Score.scss';
 
 type ScoreProps = {

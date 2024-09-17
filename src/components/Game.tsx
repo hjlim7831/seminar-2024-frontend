@@ -1,8 +1,8 @@
-// src/components/Game.tsx
 import '../styles/Game.scss';
 
 import { useCallback, useEffect, useState } from 'react';
 
+import useSessionStorage from '../hooks/useSessionStorage.ts';
 import {
   addRandomTile,
   type Direction,
@@ -12,13 +12,18 @@ import {
   moveMapIn2048Rule,
 } from '../utils/game.ts';
 import { type History } from '../utils/game.ts';
+import { Button } from './Button.tsx';
 import { GameOver } from './GameOver.tsx';
 import { GameWin } from './GameWin.tsx';
 import { Grid } from './Grid.tsx';
 import { Score } from './Score.tsx';
 
+const HISTOY_KEY = 'gameHistory';
+
 export const Game = () => {
-  const [history, setHistory] = useState<History[]>([initializeHistory()]);
+  const [history, setHistory] = useSessionStorage<History[]>(HISTOY_KEY, [
+    initializeHistory(),
+  ]);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [gameWin, setGameWin] = useState<boolean>(false);
   const currentState = history[history.length - 1];
@@ -29,7 +34,7 @@ export const Game = () => {
     setGameOver(false);
     setGameWin(false);
     setHistory([]);
-  }, []);
+  }, [setHistory]);
 
   const handleMove = useCallback(
     (prevGrid: Map2048, direction: Direction): void => {
@@ -73,7 +78,7 @@ export const Game = () => {
 
       return;
     },
-    [score],
+    [score, setHistory],
   );
 
   const handleKeyDown = useCallback(
@@ -88,7 +93,7 @@ export const Game = () => {
   );
 
   const handleUndo = () => {
-    if (history.length > 1) {
+    if (history.length >= 1) {
       setHistory((prevHistory) => prevHistory.slice(0, -1));
     }
   };
@@ -105,12 +110,8 @@ export const Game = () => {
       <div className="game-header">
         <Score score={score} />
         <div className="button-container">
-          <button className="button undo" onClick={handleUndo}>
-            Undo
-          </button>
-          <button className="button restart" onClick={resetGame}>
-            Restart
-          </button>
+          <Button color="brown" name="Undo" onClick={handleUndo} />
+          <Button color="orange" name="Restart" onClick={resetGame} />
         </div>
       </div>
       <div className="grid-container">
