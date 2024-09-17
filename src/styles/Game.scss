@@ -7,7 +7,7 @@
   min-height: 100vh;
 }
 
-.game-container {
+.grid-container {
   position: relative;
 }
 
@@ -15,19 +15,32 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 500px;
+  max-width: 450px;
   margin-bottom: 20px;
 }
 
-.restart-button {
-  padding: 10px 20px;
-  background-color: #8f7a66;
-  color: #f9f6f2;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.button-container {
+  display: flex;
+  gap: 10px;
+  .button {
+    padding: 10px 20px;
+    color: #f9f6f2;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 
-  &:hover {
-    background-color: #776e65;
+    &.undo {
+      background-color: #8f7a66;
+      &:hover {
+        background-color: #776e65;
+      }
+    }
+
+    &.restart {
+      background-color: #f2b179;
+      &:hover {
+        background-color: #f59563;
+      }
+    }
   }
 }

@@ -9,11 +9,10 @@ export const moveMapIn2048Rule = (
   direction: Direction,
 ): MoveResult => {
   if (!validateMapIsNByM(map)) throw new Error('Map is not N by M');
-  const score = 0;
 
   const rotatedMap = rotateMapCounterClockwise(map, rotateDegreeMap[direction]);
 
-  const { result, isMoved } = moveLeft(rotatedMap);
+  const { result, isMoved, score } = moveLeft(rotatedMap);
 
   return {
     result: rotateMapCounterClockwise(result, revertDegreeMap[direction]),
@@ -146,11 +145,18 @@ export const addRandomTile = (grid: Map2048): Map2048 => {
   return newGrid;
 };
 
-export const initializeGrid = (): Map2048 => {
+const initializeGrid = (): Map2048 => {
   const grid = Array<Cell>(4)
     .fill(null)
     .map(() => Array<Cell>(4).fill(null));
   return addRandomTile(addRandomTile(grid));
+};
+
+export const initializeHistory = (): History => {
+  return {
+    grid: initializeGrid(),
+    score: 0,
+  };
 };
 
 export type Cell = number | null;
@@ -158,11 +164,16 @@ export type Map2048 = Cell[][];
 export type Direction = 'up' | 'left' | 'right' | 'down';
 type RotateDegree = 0 | 90 | 180 | 270;
 type DirectionDegreeMap = Record<Direction, RotateDegree>;
-type KeyToDirectionMap = Record<string, string>;
+type KeyToDirectionMap = Record<string, Direction>;
 type MoveResult = { result: Map2048; isMoved: boolean; score: number };
 type Coord = {
   i: number;
   j: number;
+};
+
+export type History = {
+  grid: Map2048;
+  score: number;
 };
 
 export const keyToDirection: KeyToDirectionMap = {
