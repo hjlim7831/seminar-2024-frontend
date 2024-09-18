@@ -1,4 +1,3 @@
-// src/components/Grid.tsx
 import '../styles/Grid.scss';
 
 import type { Map2048 } from '../utils/game';

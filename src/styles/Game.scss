@@ -22,25 +22,4 @@
 .button-container {
   display: flex;
   gap: 10px;
-  .button {
-    padding: 10px 20px;
-    color: #f9f6f2;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &.undo {
-      background-color: #8f7a66;
-      &:hover {
-        background-color: #776e65;
-      }
-    }
-
-    &.restart {
-      background-color: #f2b179;
-      &:hover {
-        background-color: #f59563;
-      }
-    }
-  }
 }

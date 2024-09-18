@@ -2,6 +2,8 @@ import '../styles/GameWin.scss';
 
 import { useEffect, useState } from 'react';
 
+import { Button } from './Button';
+
 type GameWinProps = {
   show: boolean;
   onRestart: () => void;
@@ -23,9 +25,12 @@ export const GameWin = ({ show, onRestart }: GameWinProps) => {
   return (
     <div className={`game-win ${showOverlay ? 'show' : ''}`}>
       <div className="game-win-message">You Win!</div>
-      <button className="game-win-button" onClick={onRestart}>
-        Restart
-      </button>
+      <Button
+        className="game-win-button"
+        color="yellow"
+        onClick={onRestart}
+        name="Restart"
+      />
     </div>
   );
 };

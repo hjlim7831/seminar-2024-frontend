@@ -28,19 +28,9 @@
 
   &-button {
     margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #f9d835;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
     opacity: 0;
     transition: opacity 1s ease 0.5s;
     font-size: 1.2em;
-
-    &:hover {
-      background-color: #f1c40f;
-    }
   }
 }
 
