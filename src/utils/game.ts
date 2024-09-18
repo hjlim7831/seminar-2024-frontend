@@ -9,6 +9,7 @@ export const moveMapIn2048Rule = (
   direction: Direction,
 ): MoveResult => {
   if (!validateMapIsNByM(map)) throw new Error('Map is not N by M');
+  const score = 0;
 
   const rotatedMap = rotateMapCounterClockwise(map, rotateDegreeMap[direction]);
 
@@ -17,6 +18,7 @@ export const moveMapIn2048Rule = (
   return {
     result: rotateMapCounterClockwise(result, revertDegreeMap[direction]),
     isMoved,
+    score,
   };
 };
 const validateMapIsNByM = (map: Map2048) => {
@@ -40,7 +42,7 @@ const rotateMapCounterClockwise = (
         Array.from(
           { length: rowLength },
           (__, rowIndex) =>
-            map[rowIndex]?.[columnLength - columnIndex - 1] ?? 0,
+            map[rowIndex]?.[columnLength - columnIndex - 1] ?? null,
         ),
       );
     case 180:
@@ -49,14 +51,15 @@ const rotateMapCounterClockwise = (
           { length: columnLength },
           (__, columnIndex) =>
             map[rowLength - rowIndex - 1]?.[columnLength - columnIndex - 1] ??
-            0,
+            null,
         ),
       );
     case 270:
       return Array.from({ length: columnLength }, (_, columnIndex) =>
         Array.from(
           { length: rowLength },
-          (__, rowIndex) => map[rowLength - rowIndex - 1]?.[columnIndex] ?? 0,
+          (__, rowIndex) =>
+            map[rowLength - rowIndex - 1]?.[columnIndex] ?? null,
         ),
       );
   }
@@ -66,10 +69,16 @@ const moveLeft = (map: Map2048): MoveResult => {
   const movedRows = map.map(moveRowLeft);
   const result = movedRows.map((movedRow) => movedRow.result);
   const isMoved = movedRows.some((movedRow) => movedRow.isMoved);
-  return { result, isMoved };
+  const score = movedRows
+    .map((movedRow) => movedRow.score)
+    .reduce((acc, curr) => acc + curr, 0);
+  return { result, isMoved, score };
 };
 
-const moveRowLeft = (row: Cell[]): { result: Cell[]; isMoved: boolean } => {
+const moveRowLeft = (
+  row: Cell[],
+): { result: Cell[]; isMoved: boolean; score: number } => {
+  let score = 0;
   const reduced = row.reduce(
     (acc: { lastCell: Cell; result: Cell[] }, cell) => {
       if (cell === null) {
@@ -77,6 +86,7 @@ const moveRowLeft = (row: Cell[]): { result: Cell[]; isMoved: boolean } => {
       } else if (acc.lastCell === null) {
         return { ...acc, lastCell: cell };
       } else if (acc.lastCell === cell) {
+        score += cell;
         return { result: [...acc.result, cell * 2], lastCell: null };
       } else {
         return { result: [...acc.result, acc.lastCell], lastCell: cell };
@@ -93,7 +103,8 @@ const moveRowLeft = (row: Cell[]): { result: Cell[]; isMoved: boolean } => {
 
   return {
     result: resultRow,
-    isMoved: row.some((cell, i) => cell !== result[i]),
+    isMoved: row.some((cell, i) => cell !== resultRow[i]),
+    score,
   };
 };
 
@@ -111,9 +122,52 @@ const revertDegreeMap: DirectionDegreeMap = {
   left: 0,
 };
 
-type Cell = number | null;
+export const addRandomTile = (grid: Map2048): Map2048 => {
+  const newGrid = grid.map((row) => row.slice());
+
+  const emptyTiles: Coord[] = [];
+  grid.forEach((row, i) => {
+    row.forEach((value, j) => {
+      if (value === null) emptyTiles.push({ i, j });
+    });
+  });
+  if (emptyTiles.length === 0) return newGrid;
+
+  const selectedCoord =
+    emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+  if (selectedCoord === undefined) return newGrid;
+  const { i, j } = selectedCoord;
+
+  if (newGrid[i] !== undefined) {
+    // 2, 4 등장 비율 :  10% / 90%
+    newGrid[i][j] = Math.random() > 0.1 ? 2 : 4;
+  }
+
+  return newGrid;
+};
+
+export const initializeGrid = (): Map2048 => {
+  const grid = Array<Cell>(4)
+    .fill(null)
+    .map(() => Array<Cell>(4).fill(null));
+  return addRandomTile(addRandomTile(grid));
+};
+
+export type Cell = number | null;
 export type Map2048 = Cell[][];
-type Direction = 'up' | 'left' | 'right' | 'down';
+export type Direction = 'up' | 'left' | 'right' | 'down';
 type RotateDegree = 0 | 90 | 180 | 270;
 type DirectionDegreeMap = Record<Direction, RotateDegree>;
-type MoveResult = { result: Map2048; isMoved: boolean };
+type KeyToDirectionMap = Record<string, string>;
+type MoveResult = { result: Map2048; isMoved: boolean; score: number };
+type Coord = {
+  i: number;
+  j: number;
+};
+
+export const keyToDirection: KeyToDirectionMap = {
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+};
