@@ -1,14 +1,13 @@
-// src/components/GameOver.tsx
-import '../styles/GameOver.scss';
+import '../styles/GameWin.scss';
 
 import { useEffect, useState } from 'react';
 
-type GameOverProps = {
+type GameWinProps = {
   show: boolean;
   onRestart: () => void;
 };
 
-export const GameOver = ({ show, onRestart }: GameOverProps) => {
+export const GameWin = ({ show, onRestart }: GameWinProps) => {
   const [showOverlay, setShowOverlay] = useState(false);
 
   useEffect(() => {
@@ -22,9 +21,9 @@ export const GameOver = ({ show, onRestart }: GameOverProps) => {
   if (!show) return null;
 
   return (
-    <div className={`game-over ${showOverlay ? 'show' : ''}`}>
-      <div className="game-over-message">Game Over!</div>
-      <button className="game-over-button" onClick={onRestart}>
+    <div className={`game-win ${showOverlay ? 'show' : ''}`}>
+      <div className="game-win-message">You Win!</div>
+      <button className="game-win-button" onClick={onRestart}>
         Restart
       </button>
     </div>
