@@ -1,5 +1,4 @@
-import '../styles/Game.scss';
-
+import styled from '@emotion/styled';
 import { useCallback, useEffect, useState } from 'react';
 
 import useSessionStorage from '../hooks/useSessionStorage.ts';
@@ -19,6 +18,32 @@ import { Grid } from './Grid.tsx';
 import { Score } from './Score.tsx';
 
 const HISTOY_KEY = 'gameHistory';
+
+const GameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #faf8ef;
+  min-height: 100vh;
+`;
+
+const GridContainer = styled.div`
+  position: relative;
+`;
+
+const GameHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 450px;
+  margin-bottom: 20px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`;
 
 export const Game = () => {
   const [history, setHistory] = useSessionStorage<History[]>(HISTOY_KEY, [
@@ -44,39 +69,30 @@ export const Game = () => {
         score: newScore,
       } = moveMapIn2048Rule(prevGrid, direction);
 
-      // 이동이 발생하지 않은 경우, prevGrid를 그대로 반환
       if (!isMoved) return;
 
-      // 이동이 발생하면
-      // 1. 랜덤타일 추가
       const newGrid = addRandomTile(result);
 
-      // 2. 현 상태를 history에 저장
       setHistory((prevHistory) => [
         ...prevHistory,
         { grid: newGrid, score: score + newScore },
       ]);
 
-      // 3. 승리조건 체크
       if (newGrid.some((row) => row.includes(128))) {
         setGameWin(true);
         return;
       }
 
-      // 4. 실패조건 체크
       const allDirection: Direction[] = ['up', 'down', 'left', 'right'];
 
       const canMoveInAnyDirection = allDirection.some((dir) => {
         const { isMoved: canMove } = moveMapIn2048Rule(newGrid, dir);
         return canMove;
       });
-      console.debug('canMoveInAnyDirection: ', canMoveInAnyDirection);
       if (!canMoveInAnyDirection) {
         setGameOver(true);
         return;
       }
-
-      return;
     },
     [score, setHistory],
   );
@@ -106,19 +122,19 @@ export const Game = () => {
   }, [handleKeyDown]);
 
   return (
-    <div className="game">
-      <div className="game-header">
+    <GameContainer>
+      <GameHeader>
         <Score score={score} />
-        <div className="button-container">
+        <ButtonContainer>
           <Button color="brown" name="Undo" onClick={handleUndo} />
           <Button color="orange" name="Restart" onClick={resetGame} />
-        </div>
-      </div>
-      <div className="grid-container">
+        </ButtonContainer>
+      </GameHeader>
+      <GridContainer>
         <Grid grid={grid} />
         {gameOver && <GameOver show={gameOver} onRestart={resetGame} />}
         {gameWin && <GameWin show={gameWin} onRestart={resetGame} />}
-      </div>
-    </div>
+      </GridContainer>
+    </GameContainer>
   );
 };
